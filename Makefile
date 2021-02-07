@@ -4,7 +4,7 @@ install:
 	cp dist/usr/local/etc/auto_unlock.conf /usr/local/etc/auto_unlock.conf && \
 	cp dist/usr/local/bin/auto_unlock_install_key.sh /usr/local/bin/auto_unlock_install_key.sh && \
 	chmod +x /usr/local/bin/auto_unlock_install_key.sh && \
-	update-initramfs -k `uname -r` -u
+	update-initramfs -k all -u
 
 set-keys:
 	/usr/local/bin/auto_unlock_install_key.sh
