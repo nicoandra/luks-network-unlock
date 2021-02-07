@@ -84,7 +84,9 @@ gather_key_information
 
 echo "Information gathered. Unlocking ..."
 
-cryptsetup luksOpen /dev/sda6 sda6_crypt --key-file=$LOCK_FILE
+for partition in $UNLOCK_PARTITIONS; do
+	cryptsetup luksOpen /dev/$partition ${partition}_crypt --key-file=$LOCK_FILE
+done
 
 exit 0
 
