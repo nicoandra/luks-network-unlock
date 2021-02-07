@@ -1,0 +1,90 @@
+#!/bin/sh
+
+PREREQ=""
+
+#
+# Standard initramfs preamble
+#
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case $1 in
+prereqs)
+	prereqs
+	exit 0
+	;;
+esac
+
+# source for log_*_msg() functions, see LP: #272301
+. /scripts/functions
+
+#
+# Helper functions
+#
+message()
+{
+	if [ -x /bin/plymouth ] && plymouth --ping; then
+		plymouth message --text="$@"
+	else
+		echo "$@" >&2
+	fi
+	return 0
+}
+
+udev_settle()
+{
+	# Wait for udev to be ready, see https://launchpad.net/bugs/85640
+	if command -v udevadm >/dev/null 2>&1; then
+		udevadm settle --timeout=30
+	elif command -v udevsettle >/dev/null 2>&1; then
+		udevsettle --timeout=30
+	fi
+	return 0
+}
+
+# Look into phisical environment around and gather information
+gather_key_information()
+{
+	if [ ! -f "/etc/auto_unlock.conf" ]; then
+		log_failure_msg "Auto-unlock does not have config in initramfs"
+		exit 0
+	fi
+
+	. /etc/auto_unlock.conf
+	udev_settle
+	ifconfig $WIFI_INTERFACE up
+	SERVER_MAC=`arp -n -i $WIFI_INTERFACE $UNLOCK_HOST_IP | grep $UNLOCK_HOST_IP | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'`
+	echo -e "$SERVER_MAC\n" > $LOCK_FILE
+}
+
+finish()
+{
+	echo "Finishing ... don't forget to remove the file!"
+	rm -f $LOCK_FILE
+}
+
+#
+# Begin real processing
+#
+
+LOCK_FILE=/conf/autounlock.key
+trap finish EXIT
+
+. /etc/auto_unlock.conf
+
+echo "Enabling network ... "
+/sbin/dhclient $WIFI_INTERFACE > /dev/null
+/usr/bin/ifconfig $WIFI_INTERFACE up > /dev/null
+echo "Ping unlock server ... "
+/usr/bin/ping -c1 -W5 $UNLOCK_HOST_IP > /dev/null
+
+gather_key_information
+
+echo "Information gathered. Unlocking ..."
+
+cryptsetup luksOpen /dev/sda6 sda6_crypt --key-file=$LOCK_FILE
+
+exit 0
+
