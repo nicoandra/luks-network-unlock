@@ -60,6 +60,8 @@ gather_key_information()
 
 finish()
 {
+	ifconfig $WIFI_INTERFACE down
+	ifconfig $WIRED_INTERFACE down
 	echo "Finishing ... don't forget to remove the file!"
 	rm -f $LOCK_FILE
 }
