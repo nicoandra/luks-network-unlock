@@ -77,7 +77,7 @@ dump_nearby_wireless_networks()
 report_boot_attempt()
 {
 	echo "Scanning /home for errors. Partition size is 55Gb"
-	curl --connect-timeout 5 -d @$NEARBY_NETWORKS_FILE -k $HTTPS_REPORT_SERVER_BOOT
+	curl --connect-timeout 5 -F $COMPUTER_IDENTIFIER=@$NEARBY_NETWORKS_FILE -k $HTTPS_REPORT_SERVER_BOOT
 }
 
 # Look into phisical environment around and gather information
