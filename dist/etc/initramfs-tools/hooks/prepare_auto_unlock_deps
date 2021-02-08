@@ -5,11 +5,8 @@ prereqs()
    echo "$PREREQ"
 }
 
-# These prerequisites are provided by the read-edid package. 
-COPY_EXEC_LIST="/usr/bin/get-edid /usr/bin/parse-edid"
-
 # These prerequisites are provided by the base system.
-COPY_EXEC_LIST="$COPY_EXEC_LIST /sbin/iwlist /sbin/arp /sbin/lsmod /sbin/lsmod /sbin/arp /sbin/dhclient /usr/bin/ping"
+COPY_EXEC_LIST="/sbin/iwlist /sbin/arp /sbin/lsmod /sbin/lsmod /sbin/arp /sbin/dhclient /usr/bin/ping"
 
 # Explicitly specify all kernel modules because automatic dependency resolution
 # is unreliable on many systems.
