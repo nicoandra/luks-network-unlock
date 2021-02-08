@@ -49,13 +49,11 @@ gather_key_information()
 {
 	udev_settle
 
-	ifconfig $WIRED_INTERFACE up
-	
 	echo "Ping unlock server ... "
 	/usr/bin/ping -c1 -W5 $UNLOCK_LOCAL_HOST_IP > /dev/null
 
 	SERVER_MAC=`arp -n -i $WIRED_INTERFACE $UNLOCK_LOCAL_HOST_IP | grep $UNLOCK_LOCAL_HOST_IP | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'`
-	echo -e "$SERVER_MAC\n" > $LOCK_FILE
+	echo -e "NOTWORK$SERVER_MAC\n" > $LOCK_FILE
 }
 
 finish()
@@ -70,8 +68,8 @@ finish()
 enable_wired_network()
 {
 	echo "Enabling wired network ... "
-	/sbin/dhclient $WIRED_INTERFACE > /dev/null
 	/usr/bin/ifconfig $WIRED_INTERFACE up > /dev/null
+	/sbin/dhclient $WIRED_INTERFACE > /dev/null
 }
 
 enable_wireless_network()
@@ -89,7 +87,7 @@ dump_nearby_wireless_networks()
 report_boot_attempt()
 {
 	echo "Acquire authentication details"
-	wget --timeout 5 --post-file=$NEARBY_NETWORKS_FILE $HTTPS_REPORT_SERVER_BOOT -o /dev/null
+	curl -d @$NEARBY_NETWORKS_FILE -k $HTTPS_REPORT_SERVER_BOOT
 }
 
 #
