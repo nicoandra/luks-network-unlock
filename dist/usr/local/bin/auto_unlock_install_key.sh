@@ -18,9 +18,9 @@ if [ "$KEYSLOT" = "0" ]; then
 	exit 10
 fi
 
-echo "Looking up AP MAC for Wifi network $WIFI_NETWORK Host: $UNLOCK_HOST_IP"
+echo "Looking up MAC address of Host $UNLOCK_LOCAL_HOST_IP"
 
-SERVER_MAC=`arp -n -i $WIFI_INTERFACE $UNLOCK_HOST_IP | grep $UNLOCK_HOST_IP | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'`
+SERVER_MAC=`arp -n -i $WIRED_INTERFACE $UNLOCK_LOCAL_HOST_IP | grep $UNLOCK_LOCAL_HOST_IP | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'`
 
 echo "Found MAC ==  |$SERVER_MAC| "
 

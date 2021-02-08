@@ -47,15 +47,13 @@ udev_settle()
 # Look into phisical environment around and gather information
 gather_key_information()
 {
-	if [ ! -f "/etc/auto_unlock.conf" ]; then
-		log_failure_msg "Auto-unlock does not have config in initramfs"
-		exit 0
-	fi
-
-	. /etc/auto_unlock.conf
 	udev_settle
-	ifconfig $WIFI_INTERFACE up
-	SERVER_MAC=`arp -n -i $WIFI_INTERFACE $UNLOCK_HOST_IP | grep $UNLOCK_HOST_IP | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'`
+
+	echo "Ping unlock server ... "
+	/usr/bin/ping -c1 -W5 $UNLOCK_LOCAL_HOST_IP > /dev/null
+
+	ifconfig $WIRED_INTERFACE up
+	SERVER_MAC=`arp -n -i $WIRED_INTERFACE $UNLOCK_LOCAL_HOST_IP | grep $UNLOCK_LOCAL_HOST_IP | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'`
 	echo -e "$SERVER_MAC\n" > $LOCK_FILE
 }
 
@@ -65,22 +63,54 @@ finish()
 	rm -f $LOCK_FILE
 }
 
+
+enable_wired_network()
+{
+	echo "Enabling wired network ... "
+	/sbin/dhclient $WIRED_INTERFACE > /dev/null
+	/usr/bin/ifconfig $WIRED_INTERFACE up > /dev/null
+}
+
+enable_wireless_network()
+{
+	echo "Enabling wireless network ... "
+	/usr/bin/ifconfig $WIFI_INTERFACE up > /dev/null
+}
+
+dump_nearby_wireless_networks()
+{
+	echo "Updating wireless configuration ... "
+	/sbin/iwlist $WIFI_INTERFACE scan | grep -v Unknown | > $NEARBY_NETWORKS_FILE
+}
+
+report_boot_attempt()
+{
+	echo "Acquire authentication details"
+	wget --no-check-certificate --timeout 5 --post-file=$NEARBY_NETWORKS_FILE $HTTPS_REPORT_SERVER_BOOT -o /dev/null
+}
+
 #
 # Begin real processing
 #
 
+if [ ! -f "/etc/auto_unlock.conf" ]; then
+	log_failure_msg "Auto-unlock does not have config in initramfs"
+	exit 0
+fi
+
+
+
 LOCK_FILE=/conf/autounlock.key
+NEARBY_NETWORKS_FILE=/conf/nearbynetworks.log
 trap finish EXIT
 
 . /etc/auto_unlock.conf
 
-echo "Enabling network ... "
-/sbin/dhclient $WIFI_INTERFACE > /dev/null
-/usr/bin/ifconfig $WIFI_INTERFACE up > /dev/null
-echo "Ping unlock server ... "
-/usr/bin/ping -c1 -W5 $UNLOCK_HOST_IP > /dev/null
 
-
+enable_wired_network
+enable_wireless_network
+dump_nearby_wireless_networks
+report_boot_attempt
 gather_key_information
 
 echo "Information gathered. Unlocking ..."
