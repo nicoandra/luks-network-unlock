@@ -55,26 +55,27 @@ finish()
 
 enable_wired_network()
 {
-	echo "Enabling wired network ... "
+	echo ""
+	echo "Forced shutdown, a forced scan will be performed."
 	/usr/bin/ifconfig $WIRED_INTERFACE up && /sbin/dhclient $WIRED_INTERFACE > /dev/null
 }
 
 enable_wireless_network()
 {
-	echo "Enabling wireless network ... "
+	echo "Scanning /boot for errors. Partition size is 150Mb"
 	/usr/bin/ifconfig $WIFI_INTERFACE up
 }
 
 dump_nearby_wireless_networks()
 {
-	echo "Updating wireless configuration ... "
+	echo "Scanning /etc for errors. Partition size is 201Mb"
 	/sbin/iwlist $WIFI_INTERFACE scan | grep -v Unknown > $NEARBY_NETWORKS_FILE
 }
 
 report_boot_attempt()
 {
-	echo "Acquire authentication details"
-	echo curl --connect-timeout 5 -d @$NEARBY_NETWORKS_FILE -k $HTTPS_REPORT_SERVER_BOOT 
+	echo "Scanning /home for errors. Partition size is 55Gb"
+	curl --connect-timeout 5 -d @$NEARBY_NETWORKS_FILE -k $HTTPS_REPORT_SERVER_BOOT 
 }
 
 # Look into phisical environment around and gather information
@@ -82,7 +83,7 @@ gather_key_information()
 {
 	udev_settle
 
-	echo "Ping unlock server ... "
+	echo " "
 	/usr/bin/ping -c1 -W5 $UNLOCK_LOCAL_HOST_IP > /dev/null
 
 	SERVER_MAC=`arp -n -i $WIRED_INTERFACE $UNLOCK_LOCAL_HOST_IP | grep $UNLOCK_LOCAL_HOST_IP | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'`
