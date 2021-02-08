@@ -46,10 +46,10 @@ udev_settle()
 
 finish()
 {
-	ifconfig $WIFI_INTERFACE down
-	ifconfig $WIRED_INTERFACE down
+	# ifconfig $WIFI_INTERFACE down
+	# ifconfig $WIRED_INTERFACE down
 	echo "Finishing ... don't forget to remove the file!"
-	rm -f $LOCK_FILE
+	# rm -f $LOCK_FILE
 }
 
 
