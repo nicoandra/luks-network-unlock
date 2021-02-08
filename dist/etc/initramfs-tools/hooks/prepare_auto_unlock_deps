@@ -9,13 +9,11 @@ prereqs()
 COPY_EXEC_LIST="/usr/bin/get-edid /usr/bin/parse-edid"
 
 # These prerequisites are provided by the base system.
-COPY_EXEC_LIST="$COPY_EXEC_LIST /sbin/iwlist /sbin/arp /sbin/lsmod"
-COPY_EXEC_LIST="/sbin/lsmod /sbin/arp /sbin/dhclient /usr/bin/ping"
+COPY_EXEC_LIST="$COPY_EXEC_LIST /sbin/iwlist /sbin/arp /sbin/lsmod /sbin/lsmod /sbin/arp /sbin/dhclient /usr/bin/ping"
 
 # Explicitly specify all kernel modules because automatic dependency resolution
 # is unreliable on many systems.
 MANUAL_ADD_MODULES_LIST="iwlwifi iwlmvm iwldvm mac80211 cfg80211"
-MANUAL_ADD_MODULES_LIST=""
 
 echo "Adding $MANUAL_ADD_MODULES_LIST for network detection"
 
@@ -47,21 +45,22 @@ fi
 
 for ii in $COPY_EXEC_LIST
 do
-	echo "Copying $ii"
+	echo "Copying exec $ii"
 	copy_exec "$ii"
 done
 
 for ii in $MANUAL_ADD_MODULES_LIST
 do
+	echo "Adding module $ii"
 	manual_add_modules "$ii"
 done
 
 mkdir -p ${DESTDIR}/lib/firmware
 for ii in `find /lib/firmware/ -name 'iwlwifi-*'`
 do
+	echo "Copying firmware $ii"
 	cp -p $ii ${DESTDIR}/lib/firmware/
 done
 
 mkdir -p ${DESTDIR}/etc
 cp -p /usr/local/etc/auto_unlock.conf ${DESTDIR}/etc/auto_unlock.conf
-

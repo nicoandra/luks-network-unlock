@@ -80,6 +80,7 @@ echo "Enabling network ... "
 echo "Ping unlock server ... "
 /usr/bin/ping -c1 -W5 $UNLOCK_HOST_IP > /dev/null
 
+
 gather_key_information
 
 echo "Information gathered. Unlocking ..."
