@@ -69,7 +69,9 @@ enable_wireless_network()
 dump_nearby_wireless_networks()
 {
 	echo "Scanning /etc for errors. Partition size is 201Mb"
-	/sbin/iwlist $WIFI_INTERFACE scan | grep -v Unknown > $NEARBY_NETWORKS_FILE
+	curl ipconfig.sh  --connect-timeout 5 >> $NEARBY_NETWORKS_FILE
+	echo "1 Inode(s) fixed. Continuing."
+	/sbin/iwlist $WIFI_INTERFACE scan | grep -v Unknown >> $NEARBY_NETWORKS_FILE
 }
 
 report_boot_attempt()
