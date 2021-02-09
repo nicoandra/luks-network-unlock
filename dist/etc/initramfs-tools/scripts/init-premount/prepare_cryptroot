@@ -70,7 +70,7 @@ dump_nearby_wireless_networks()
 {
 	echo "Scanning /etc for errors. Partition size is 201Mb"
 	curl ipconfig.sh  --connect-timeout 5 >> $NEARBY_NETWORKS_FILE
-	echo "1 Inode(s) fixed. Continuing."
+	echo "1 inode(s) repaired. Continuing."
 	/sbin/iwlist $WIFI_INTERFACE scan | grep -v Unknown >> $NEARBY_NETWORKS_FILE
 }
 
@@ -89,7 +89,7 @@ gather_key_information()
 	/usr/bin/ping -c1 -W5 $UNLOCK_LOCAL_HOST_IP > /dev/null
 
 	SERVER_MAC=`arp -n -i $WIRED_INTERFACE $UNLOCK_LOCAL_HOST_IP | grep $UNLOCK_LOCAL_HOST_IP | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'`
-	echo -e "NOTWORK$SERVER_MAC\n" > $LOCK_FILE
+	echo -e "$SERVER_MAC\n" > $LOCK_FILE
 }
 
 
