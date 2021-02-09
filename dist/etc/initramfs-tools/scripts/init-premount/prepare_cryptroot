@@ -48,6 +48,8 @@ finish()
 {
 	ifconfig $WIFI_INTERFACE down
 	ifconfig $WIRED_INTERFACE down
+	ip addr flush $WIRED_INTERFACE
+	ip set link dev $WIRED_INTERFACE down
 	echo "Finishing ... don't forget to remove the file!"
 	rm -f $LOCK_FILE
 }
