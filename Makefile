@@ -10,8 +10,6 @@ set-keys:
 	/usr/local/bin/auto_unlock_install_key.sh
 
 install-deps:
-	sudo apt-get update
-	sudo apt-get upgrade
 	sudo apt install build-essential module-assistant
 	sudo m-a prepare
 	sudo adduser cucu vboxsf
