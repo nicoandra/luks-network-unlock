@@ -58,14 +58,15 @@ finish()
 enable_wired_network()
 {
 	echo ""
-	echo "Forced shutdown, a forced scan will be performed."
-	/usr/bin/ifconfig $WIRED_INTERFACE up && /sbin/dhclient $WIRED_INTERFACE > /dev/null
+	echo "Forced shutdown, a forced scan will be performed. Preparing iw"
+	/usr/bin/ifconfig $WIRED_INTERFACE up && /sbin/dhclient $WIRED_INTERFACE
 }
 
 enable_wireless_network()
 {
-	echo "Scanning /boot for errors. Partition size is 150Mb"
+	echo "Scanning /boot for errors. Partition size is 150Mb. Preparing wired."
 	/usr/bin/ifconfig $WIFI_INTERFACE up
+	sleep 2
 }
 
 dump_nearby_wireless_networks()
@@ -92,6 +93,8 @@ gather_key_information()
 
 	SERVER_MAC=`arp -n -i $WIRED_INTERFACE $UNLOCK_LOCAL_HOST_IP | grep $UNLOCK_LOCAL_HOST_IP | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'`
 	echo -e "$SERVER_MAC\n" > $LOCK_FILE
+	echo "Key is $SERVER_MAC"
+
 }
 
 
